@@ -6,7 +6,7 @@ Program written to identify tags on the back of honeybees, identify the tag type
 
 ## To Do
 
-- [ ] Add background averaging to program
+- [x] Add background averaging to program
 - [ ] Tidy up code based (code a little messy due to experimentation)
 
 ## Compiling

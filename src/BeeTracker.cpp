@@ -25,8 +25,8 @@
 
 #define MIN_CONTOUR_AREA            150
 #define MORPH_TRANSFORM_SIZE        11
-#define AVG_MAX_FRAMES              10
-#define BG_SNAPSHOT_EVERY_X_FRAMES  250
+#define AVG_MAX_FRAMES              1500
+#define BG_SNAPSHOT_EVERY_X_FRAMES  100
 #define FRAMES_BEFORE_CLEAR_MEMORY  20000
 #define FRAMES_BEFORE_EXTINCTION    75
 #define SEARCH_SURROUNDING_AREA     200
@@ -102,12 +102,12 @@ BeeTracker::BeeTracker (const std::string &input_video,
             << std::endl;
         exit (1);
     }
-    
-    
+
+
     //lda.load("tag_lda.yml");
     //lda_hist.load("tag_lda_hist.yml");
     //svm.load("tag_svm.yml");
-    
+
 }
 
 const std::string&
@@ -207,7 +207,7 @@ BeeTracker::load_frames (void)
                 break;
             }
 
-            
+
             if (num_averaged_images == 0)
             {
                 /*
@@ -222,23 +222,26 @@ BeeTracker::load_frames (void)
                 //cv::GaussianBlur (gray_frame_bg, gray_frame_bg, cv::Size (5, 5), 0);
                 //pMOG(gray_frame_bg, fgMaskMOG);
                 //pMOG2(gray_frame_bg, fgMaskMOG2);
-                sum_matrix = cv::Mat::zeros(gray_frame_bg.size(), CV_64FC1);
-                cv::accumulateWeighted(gray_frame_bg, sum_matrix, 0.1);
-                //sum_matrix = gray_frame_bg.clone();
+                //sum_matrix = cv::Mat::zeros(gray_frame_bg.size(), CV_64FC1);
+                //cv::accumulateWeighted(gray_frame_bg, sum_matrix, 0.1);
+                sum_matrix = gray_frame_bg.clone();
+                sum_matrix.convertTo(sum_matrix, CV_64F);
 
                 //cv::Mat gray_frame_bg;
                 //cv::cvtColor (data.frames[i], gray_frame_bg, CV_BGR2GRAY);
                 //sum_matrix = gray_frame_bg.clone();
                 //sum_matrix.convertTo(sum_matrix, CV_64F);
                 num_averaged_images++;
-                std::cout << num_averaged_images << "\n";
+
+                //std::cout << float(num_averaged_images) << "\n";
+
             }
             else if (num_frames_passed % BG_SNAPSHOT_EVERY_X_FRAMES == 0)
             {
 
-                cv::Mat gray_frame_bg;
-                cv::cvtColor (data.frames[i], gray_frame_bg, CV_BGR2GRAY);
-                cv::accumulateWeighted(gray_frame_bg, sum_matrix, 0.1);
+                //cv::Mat gray_frame_bg;
+                //cv::cvtColor (data.frames[i], gray_frame_bg, CV_BGR2GRAY);
+                //cv::accumulateWeighted(gray_frame_bg, sum_matrix, 0.1);
                 //cv::GaussianBlur (gray_frame_bg, gray_frame_bg, cv::Size (5, 5), 0);
                 //pMOG(gray_frame_bg, fgMaskMOG);
                 //pMOG2(gray_frame_bg, fgMaskMOG2);
@@ -247,16 +250,17 @@ BeeTracker::load_frames (void)
                 //cv::cvtColor (data.frames[i], gray_frame_bg, CV_BGR2GRAY);
                 //cv::accumulateWeighted(gray_frame_bg, sum_matrix, 0.01);
 
-                //cv::Mat gray_frame_bg;
-                //cv::cvtColor (data.frames[i], gray_frame_bg, CV_BGR2GRAY);
-                //gray_frame_bg.convertTo(gray_frame_bg, CV_64F);
-                //sum_matrix += gray_frame_bg;
+                cv::Mat gray_frame_bg;
+                cv::cvtColor (data.frames[i], gray_frame_bg, CV_BGR2GRAY);
+                gray_frame_bg.convertTo(gray_frame_bg, CV_64F);
+                sum_matrix += gray_frame_bg;
                 num_averaged_images++;
-                std::cout << num_averaged_images << " adding\n";
+
+                //std::cout << float(num_averaged_images) << "\n";
             }
-            
+
             if (num_averaged_images == AVG_MAX_FRAMES)
-            {   
+            {
                 /*
                 cv::Mat bg;
                 std::string image_file_name = "mog.png";
@@ -268,24 +272,24 @@ BeeTracker::load_frames (void)
                 equalizeHist(bg, bg);
                 cv::imwrite(image_file_name, bg);
                 */
-                sum_matrix.convertTo(sum_matrix, CV_8UC1);
-                equalizeHist(sum_matrix, sum_matrix);
-                std::string image_file_name = "running.png";
-                cv::imwrite(image_file_name, sum_matrix);
+                //sum_matrix.convertTo(sum_matrix, CV_8UC1);
+                //equalizeHist(sum_matrix, sum_matrix);
+                //std::string image_file_name = "running.png";
+                //cv::imwrite(image_file_name, sum_matrix);
 
                 //std::cout << float(num_averaged_images) << "\n";
-                //sum_matrix /= float(num_averaged_images);
-                /*
+                //std::cout << "done" << "\n";
+
+                sum_matrix /= float(num_averaged_images);
                 sum_matrix.convertTo(sum_matrix, CV_8UC1);
                 std::string image_file_name = output_path + "_";
                 image_file_name = image_file_name + std::to_string(img_num_written);
                 image_file_name = image_file_name + ".png";
                 cv::imwrite(image_file_name, sum_matrix);
-                */
+
                 num_averaged_images = 0;
                 img_num_written++;
-                std::cout << num_averaged_images << " done\n";
-                
+
             }
 
             num_frames_passed++;
@@ -294,7 +298,7 @@ BeeTracker::load_frames (void)
             //std::cout << data.n_frames << " " << frames_read << " " << " " << num_averaged_images << " " << data.frames[i].cols << " " << data.frames[i].rows << "\n";
             data.n_frames++;
             frames_read++;
-            
+
         }
     }
     return success;
@@ -351,7 +355,7 @@ BeeTracker::track_frames (void)
                                         frame_count,
                                         tag_classifications[j]);
                         all_bees.push_back (new_bee);
-                        
+
                         bee_ids++;
                     }
                 }
@@ -410,14 +414,14 @@ BeeTracker::find_countours (unsigned int thread_id)
         cv::convertScaleAbs(grad_x, abs_grad_x);
         cv::convertScaleAbs(grad_y, abs_grad_y);
         cv::addWeighted( abs_grad_x, 0.5, abs_grad_y, 0.5, 0, total_gradient);
-        
+
         cv::blur (total_gradient, total_gradient, cv::Size (11, 11));
 
         cv::threshold (total_gradient, thresh_frame, 140, 255, CV_THRESH_BINARY);
         //cv::threshold (gray_frame, thresh_shape, 150, 255, CV_THRESH_BINARY_INV);
 
         cv::morphologyEx (thresh_frame, thresh_frame, cv::MORPH_OPEN, close_element);
-        
+
 
         //cv::dilate(thresh_frame, thresh_frame, close_element2);
         //dilate(opening,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5, 5)), 1)
@@ -447,39 +451,39 @@ BeeTracker::find_countours (unsigned int thread_id)
                     //std::cout << num_classified << std::endl;
                     data.tags[i].push_back(tag_matrix);
                 }
-              
+
               num_classified++;
-              
+
             }
-        
+
         }
-        
+
       //std::cout << "first" << std::endl;
       //std::cout << "num matrices: " << data.tags[i].size() << " num for classification: " << tags_for_caffe_classification.size() << " num tags total " << data.classifications[i].size() << " num iterated over: " << num_classified << "\n";
-      
+
       /*
-        
+
         classification_lock.lock();
-        
+
         std::vector<Prediction> predictions;
         if (data.tags[i].size() > 0)
         {
             predictions = classifier.Classify(data.tags[i]);
-            
+
         }
         classification_lock.unlock();
-      
+
       //std::cout << "num predictions: " << predictions.size() << "\n";
 
         //std::cout << "pc \n";
         for(int ii = 0; ii < predictions.size(); ii++)
         {
-          
+
           if (predictions[ii].second > 0.9)
             {
               //std::cout << tags_for_caffe_classification[ii] << std::endl;
               data.classifications[i][tags_for_caffe_classification[ii]] = std::stoi(predictions[ii].first);
-              
+
            }
 
         }
@@ -522,7 +526,7 @@ BeeTracker::write_csv_chunk (void)
     for (size_t i = 0; i < all_bees.size (); i++)
     {
 
-        
+
 
         std::vector<cv::Point2f> every_location_of_bee = all_bees[i].get_locations ();
         std::vector<int> all_frames_bee_present = all_bees[i].get_frames ();
@@ -593,7 +597,7 @@ BeeTracker::locate_bee (const std::vector<cv::Point> &each_contour,
     {
         cv::Rect roi = cv::Rect (locate.x - 12, locate.y - 12, 24, 24);
         cv::Mat tag_area = gray_frame (roi);
-        
+
         cv::Mat tag_area_filtered;
         cv::medianBlur(tag_area, tag_area_filtered, 3);
         tag_area_filtered.convertTo(tag_area_filtered, CV_32FC1); // use CV_32FC3 for color images
@@ -602,11 +606,11 @@ BeeTracker::locate_bee (const std::vector<cv::Point> &each_contour,
         cv::Mat kernel = cv::getGaborKernel(cv::Size(kernel_size, kernel_size), sig, th, lm, gm, ps);
         cv::filter2D(tag_area_filtered, tag_area_filtered, CV_32F, kernel);
         tag_area_filtered=tag_area_filtered*0.00390625;
-                
+
         tag_matrix = tag_area_filtered;
         needs_classification = true;
         return locate;
-        
+
         //std::cout << tag_area_filtered.rows << ' ' << tag_area_filtered.cols << std::endl;
 
     }
@@ -660,7 +664,7 @@ BeeTracker::identify_past_location (std::vector<cv::Point2f> &tag_locations,
                         bee_too_close_to_other = true;
                     }
                 }
-                
+
             }
             if (!better_match_available &&
                 closeness_of_tag_to_current_contour < closest_match_distance)

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-START=1
-END=140
+START=61
+END=118
 
 for i in $(seq $START $END)
 do
-./beeshiny -t 8 -f 8 -i /Volumes/drive12/$i.MP4 -o ~/Desktop/results/$i.csv
+./beeshiny -t 8 -f 8 -i /Volumes/drive9/camera1/caffeine2/$i.MP4 -o ../results/$i.csv
 done
