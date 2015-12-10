@@ -4,10 +4,17 @@
 
 Program written to identify tags on the back of honeybees, identify the tag type using machine learning, track hundreds of bees simultaneously, and write the output to a CSV file.
 
+## To Do
+
+- [ ] Add background averaging to program
+- [ ] Tidy up code based (code a little messy due to experimentation)
+
 ## Compiling
 
 make -f Makefile.mac
 make -f Makefile.linux
+
+`beeshiny` executable will be created in the `bin` directory.
 
 ## Requirements
 
