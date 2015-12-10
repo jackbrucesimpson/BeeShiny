@@ -1,0 +1,27 @@
+CC = g++
+CFLAGS = -O3 -g -Wall -std=c++11 `pkg-config opencv --cflags`
+LIBS = \
+       `pkg-config opencv --libs` \
+       -lboost_system-mt \
+       -lboost_timer-mt \
+       -lboost_filesystem-mt \
+       -lboost_program_options-mt \
+       -lcaffe \
+       -lglog \
+       -I /usr/local/Cellar/openblas/0.2.14_1/include \
+       -L /usr/local/Cellar/openblas/0.2.14_1/lib
+
+SRCS = \
+       BeeTag.cpp \
+       Classifier.cpp \
+       BeeTracker.cpp \
+       main.cpp
+
+PROG = ../bin/beeshiny
+
+
+$(PROG):$(SRCS)
+	$(CC) $(CFLAGS) -o $(PROG) $(SRCS) $(LIBS)
+
+clean:
+	rm $(PROG)
