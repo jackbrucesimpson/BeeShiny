@@ -11,9 +11,8 @@ Program written to identify tags on the back of honeybees, identify the tag type
 
 ## Compiling
 
-make -f Makefile.mac
-
-make -f Makefile.linux
+`make -f Makefile.mac`
+`make -f Makefile.linux`
 
 `beeshiny` executable will be created in the `bin` directory.
 
