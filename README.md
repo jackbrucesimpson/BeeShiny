@@ -46,3 +46,13 @@ Compiling my own C++ code and linking to Caffe has been a bit of a hassle, here'
 
 4. Alternatively, you could do what I did on my Linux machine and instead of copying header files, I just linked directly to those directories when I compiled:
 `g++ classification.cpp  -lcaffe -lglog -lopencv_core -lopencv_highgui -lopencv_imgproc -I ~/caffe/include -L ~/caffe/build/lib -I /usr/local/Cellar/openblas/0.2.14_1/include -L /usr/local/Cellar/openblas/0.2.14_1/lib -o classifier`
+
+## Training data
+
+## Slicing MP4 Videos Using Memcoder
+
+I used this script to generate short snippets of my videos which I could parse to create training data for Caffe.
+
+```bash
+mencoder -ss 00:00:00 -endpos 00:10:00 -oac copy -ovc copy -oac pcm 2.MP4 -o out.MP4
+```

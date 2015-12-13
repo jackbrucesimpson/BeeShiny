@@ -9,6 +9,7 @@
 # Directories
 # data/
 nci/
+results/*
 
 # Executables
 *.exe
