@@ -31,7 +31,7 @@
 #define FRAMES_BEFORE_EXTINCTION    75
 #define SEARCH_SURROUNDING_AREA     200
 #define SEARCH_EXPANSION_BY_FRAME   20
-#define MIN_TAG_CLASSIFICATION_SIZE 26
+#define MIN_TAG_CLASSIFICATION_SIZE 24
 #define MIN_CLOSENESS_BEFORE_DELETE 15
 
 #define MAX_THREADS                 64
@@ -583,7 +583,7 @@ BeeTracker::locate_bee (const std::vector<cv::Point> &each_contour,
 
     if (surrounding_rectangle.size.width < MIN_TAG_CLASSIFICATION_SIZE ||
         surrounding_rectangle.size.height < MIN_TAG_CLASSIFICATION_SIZE ||
-        std::abs(surrounding_rectangle.size.width - surrounding_rectangle.size.height) > 2 ||
+        std::abs(surrounding_rectangle.size.width - surrounding_rectangle.size.height) > 3 ||
         locate.x - 12 < 0 ||
         locate.x + 12 > gray_frame.cols ||
         locate.y - 12 < 0 ||
