@@ -461,7 +461,7 @@ BeeTracker::find_countours (unsigned int thread_id)
       //std::cout << "first" << std::endl;
       //std::cout << "num matrices: " << data.tags[i].size() << " num for classification: " << tags_for_caffe_classification.size() << " num tags total " << data.classifications[i].size() << " num iterated over: " << num_classified << "\n";
 
-      /*
+
 
         classification_lock.lock();
 
@@ -488,7 +488,7 @@ BeeTracker::find_countours (unsigned int thread_id)
 
         }
         tags_for_caffe_classification.clear();
-        */
+
         //std::cout << "dpc \n";
       //std::cout << "done \n\n";
     }
